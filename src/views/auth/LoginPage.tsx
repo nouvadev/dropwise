@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,105 +11,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
-
-interface FormData {
-  email: string;
-  password: string;
-}
-
-interface FormErrors {
-  email?: string;
-  password?: string;
-  general?: string;
-}
+import { useLoginForm } from "@/hooks/useLoginForm"; // Import the custom hook
+import React from "react";
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState<FormData>({
-    email: "",
-    password: "",
-  });
+  const {
+    formData,
+    errors,
+    isLoading,
+    handleInputChange,
+    handleSubmit,
+    // showPassword and setShowPassword are not part of useLoginForm yet, keeping them local.
+  } = useLoginForm();
 
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-
-  // Email validation
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  // Form validation
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    // Email validation
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!validateEmail(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // Handle input changes
-  const handleInputChange = (field: keyof FormData) => (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = e.target.value;
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
-    // Clear specific field error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
-    }
-  };
-
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsLoading(true);
-    setErrors({});
-
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Here you would typically make an API call to your authentication endpoint
-      console.log("Login attempt:", formData);
-      
-      // For demo purposes, simulate success/failure
-      if (formData.email === "demo@example.com" && formData.password === "password") {
-        // Success - redirect to dashboard
-        console.log("Login successful!");
-        // navigate("/dashboard");
-      } else {
-        setErrors({
-          general: "Invalid email or password. Please try again."
-        });
-      }
-    } catch (error) {
-      setErrors({
-        general: "Something went wrong. Please try again later."
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // showPassword state remains local to the component as it's purely a UI concern.
+  const [showPassword, setShowPassword] = React.useState(false);
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4 sm:p-6 md:p-8 relative overflow-hidden">
@@ -243,7 +158,7 @@ export default function LoginPage() {
                 Forgot password?
               </Link>
               <Link 
-                to="/register" 
+                to="/signup" 
                 className="text-terracotta hover:text-terracotta/80 hover:underline transition-colors duration-200"
               >
                 Create account

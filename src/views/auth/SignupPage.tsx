@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,131 +12,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
-
-interface FormData {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
-interface FormErrors {
-  name?: string;
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-  general?: string;
-}
+import { useSignupForm } from "@/hooks/useSignupForm";
 
 export default function SignupPage() {
-  const [formData, setFormData] = useState<FormData>({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  // Email validation
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  // Form validation
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    // Name validation
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
-
-    // Email validation
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!validateEmail(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
-    // Confirm Password validation
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password";
-    } else if (formData.confirmPassword !== formData.password) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // Handle input changes
-  const handleInputChange = (field: keyof FormData) => (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = e.target.value;
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
-    // Clear specific field error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
-    }
-    // Clear general error if it exists and user types in any field
-    if (errors.general) {
-        setErrors(prev => ({ ...prev, general: undefined}));
-    }
-  };
-
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsLoading(true);
-    setErrors({}); // Clear previous errors
-
-    try {
-      // Simulate API call for registration
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Here you would typically make an API call to your registration endpoint
-      console.log("Signup attempt:", { name: formData.name, email: formData.email, password: formData.password }); // Don\'t log confirmPassword
-      
-      // For demo purposes, simulate success
-      // In a real app, you might redirect to a verification page or login
-      console.log("Signup successful!");
-      // navigate("/login"); 
-      // Or perhaps to a "please verify your email" page
-
-      // Simulate a successful registration then show a general success message
-      // or redirect. For this example, let\'s clear the form and show a message.
-      // This is just for demo, a real app would navigate or display a more persistent success state.
-      setFormData({ name: "", email: "", password: "", confirmPassword: "" });
-      // Potentially set a success message in the state to display in the UI
-
-    } catch (error) {
-      // Simulate an error (e.g., email already exists)
-      setErrors({
-        general: "Registration failed. The email might already be in use or an unexpected error occurred. Please try again."
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const {
+    formData,
+    errors,
+    isLoading,
+    showPassword,
+    setShowPassword,
+    showConfirmPassword,
+    setShowConfirmPassword,
+    handleInputChange,
+    handleSubmit,
+  } = useSignupForm();
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4 sm:p-6 md:p-8 relative overflow-hidden">
@@ -287,7 +176,7 @@ export default function SignupPage() {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   disabled={isLoading}
-                  aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                 >
                   {showConfirmPassword ? (
                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
