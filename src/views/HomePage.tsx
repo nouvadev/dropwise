@@ -1,63 +1,72 @@
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
-import { BookOpen, LogOut, PlusCircle } from "lucide-react";
+import { BookOpen, LogOut, PlusCircle, Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropList } from "@/components/domain/DropList";
 import type { Drop } from "@/types/domain";
-
-// Mock data reflecting the database schema
-const mockDrops: Drop[] = [
-  {
-    id: "1",
-    topic: "The Hidden Costs of Unstructured Code",
-    url: "https://example.com/articles/unstructured-code",
-    user_notes: "A must-read for the team. Highlights the importance of our new coding standards.",
-    added_date: "2 days ago",
-    status: "new",
-    tags: [{ id: 1, name: "refactoring" }, { id: 2, name: "best-practices" }],
-  },
-  {
-    id: "2",
-    topic: "Introduction to Mindful Learning",
-    url: "https://youtube.com/watch?v=mindful",
-    user_notes: null,
-    added_date: "1 day ago",
-    status: "new",
-    tags: [{ id: 3, name: "wellness" }, { id: 4, name: "learning" }],
-  },
-  {
-    id: "3",
-    topic: "Building Resilient Systems with Go",
-    url: "https://example-conference.com/talks/go-resilience",
-    user_notes: "Check out the section on rate limiting.",
-    added_date: "1 week ago",
-    status: "sent",
-    tags: [{ id: 5, name: "golang" }, { id: 6, name: "architecture" }],
-  },
-  {
-    id: "4",
-    topic: "A Guide to Sustainable Productivity",
-    url: "https://some-blog.com/sustainable-productivity",
-    user_notes: "Finished this one. Great insights on avoiding burnout.",
-    added_date: "2 weeks ago",
-    status: "archived",
-    tags: [{ id: 7, name: "productivity" }],
-  },
-];
+import { AddDropDialog } from "@/components/domain/AddDropDialog";
+import { useEffect, useState } from "react";
+import api from "@/services/api";
 
 const HomePage = () => {
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
+  const [drops, setDrops] = useState<Drop[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDrops = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get<Drop[] | { drops: Drop[] }>("/drops");
+        
+        // Handle both direct array response and object-wrapped response
+        const dropsData = Array.isArray(response.data) ? response.data : response.data.drops;
+        
+        setDrops(dropsData || []);
+        setError(null);
+      } catch (err) {
+        setError("Failed to fetch drops. Please try again later.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDrops();
+  }, []);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
-  const newDrops = mockDrops.filter((drop) => drop.status === 'new');
-  const sentDrops = mockDrops.filter((drop) => drop.status === 'sent');
-  const archivedDrops = mockDrops.filter((drop) => drop.status === 'archived');
+  const handleAddDrop = (newDrop: Drop) => {
+    setDrops((prevDrops) => [newDrop, ...prevDrops]);
+  };
+
+  const handleUpdateDrop = (updatedDrop: Drop) => {
+    setDrops((prevDrops) =>
+      prevDrops.map((drop) => (drop.id === updatedDrop.id ? updatedDrop : drop))
+    );
+  };
+
+  const handleDeleteDrop = async (dropId: string) => {
+    try {
+      await api.delete(`/drops/${dropId}`);
+      setDrops((prevDrops) => prevDrops.filter((drop) => drop.id !== dropId));
+    } catch (err) {
+      // TODO: Show a toast notification for better user experience
+      console.error("Failed to delete drop:", err);
+      setError("Failed to delete the drop. Please try again.");
+    }
+  };
+
+  const newDrops = drops.filter((drop) => drop.status === 'new');
+  const sentDrops = drops.filter((drop) => drop.status === 'sent');
+  const archivedDrops = drops.filter((drop) => drop.status === 'archived');
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-background via-background to-sage/30 font-serif text-foreground">
@@ -86,29 +95,48 @@ const HomePage = () => {
           <div className="text-center mb-10 animate-gentle-fade-in">
             <h2 className="text-3xl font-semibold mb-2">A drop a day keeps the clutter away.</h2>
             <p className="text-muted-foreground mb-4">Found something interesting? Add it to your collection.</p>
-            <Button size="lg" className="bg-terracotta hover:bg-terracotta/90 text-terracotta-foreground rounded-full shadow-lg hover:shadow-xl transition-shadow">
-              <PlusCircle className="mr-2 h-5 w-5" />
-              Add a New Drop
-            </Button>
+            <AddDropDialog onDropAdded={handleAddDrop} />
           </div>
 
           {/* Drop List with Tabs */}
-          <Tabs defaultValue="new" className="w-full animate-gentle-fade-in animation-delay-200">
-            <TabsList className="grid w-full grid-cols-3 bg-card/60 backdrop-blur-md border border-border/70 shadow-sm">
-              <TabsTrigger value="new">New ({newDrops.length})</TabsTrigger>
-              <TabsTrigger value="sent">Sent ({sentDrops.length})</TabsTrigger>
-              <TabsTrigger value="archived">Archived ({archivedDrops.length})</TabsTrigger>
-            </TabsList>
-            <TabsContent value="new" className="mt-6">
-              <DropList drops={newDrops} />
-            </TabsContent>
-            <TabsContent value="sent" className="mt-6">
-              <DropList drops={sentDrops} />
-            </TabsContent>
-            <TabsContent value="archived" className="mt-6">
-              <DropList drops={archivedDrops} />
-            </TabsContent>
-          </Tabs>
+          {loading ? (
+            <div className="flex justify-center items-center py-16">
+              <Loader2 className="h-8 w-8 animate-spin text-terracotta" />
+            </div>
+          ) : error ? (
+            <div className="text-center py-16 text-destructive">
+              <p>{error}</p>
+            </div>
+          ) : (
+            <Tabs defaultValue="new" className="w-full animate-gentle-fade-in animation-delay-200">
+              <TabsList className="grid w-full grid-cols-3 bg-card/60 backdrop-blur-md border border-border/70 shadow-sm">
+                <TabsTrigger value="new">New ({newDrops.length})</TabsTrigger>
+                <TabsTrigger value="sent">Sent ({sentDrops.length})</TabsTrigger>
+                <TabsTrigger value="archived">Archived ({archivedDrops.length})</TabsTrigger>
+              </TabsList>
+              <TabsContent value="new" className="mt-6">
+                <DropList 
+                  drops={newDrops} 
+                  onDropUpdated={handleUpdateDrop} 
+                  onDropDeleted={handleDeleteDrop} 
+                />
+              </TabsContent>
+              <TabsContent value="sent" className="mt-6">
+                <DropList 
+                  drops={sentDrops} 
+                  onDropUpdated={handleUpdateDrop} 
+                  onDropDeleted={handleDeleteDrop} 
+                />
+              </TabsContent>
+              <TabsContent value="archived" className="mt-6">
+                <DropList 
+                  drops={archivedDrops} 
+                  onDropUpdated={handleUpdateDrop} 
+                  onDropDeleted={handleDeleteDrop} 
+                />
+              </TabsContent>
+            </Tabs>
+          )}
         </div>
       </main>
     </div>

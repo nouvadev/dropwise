@@ -3,9 +3,11 @@ import { DropCard } from "./DropCard";
 
 interface DropListProps {
   drops: Drop[];
+  onDropUpdated: (updatedDrop: Drop) => void;
+  onDropDeleted: (dropId: string) => void;
 }
 
-export const DropList = ({ drops }: DropListProps) => {
+export const DropList = ({ drops, onDropUpdated, onDropDeleted }: DropListProps) => {
   if (drops.length === 0) {
     return (
       <div className="text-center py-16">
@@ -27,7 +29,7 @@ export const DropList = ({ drops }: DropListProps) => {
             className="animate-gentle-fade-in"
             style={{ animationDelay: `${index * 100}ms` }}
         >
-            <DropCard drop={drop} />
+            <DropCard drop={drop} onDropUpdated={onDropUpdated} onDropDeleted={onDropDeleted} />
         </div>
       ))}
     </div>
