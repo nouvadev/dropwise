@@ -7,14 +7,12 @@ import { validateEmail } from "@/lib/utils/validation";
 const MIN_PASSWORD_LENGTH = 8;
 
 interface SignupPageFormData {
-  name: string;
   email: string;
   password: string;
   confirmPassword: string;
 }
 
 interface SignupFormErrors {
-  name?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
@@ -23,7 +21,6 @@ interface SignupFormErrors {
 
 export const useSignupForm = () => {
   const [formData, setFormData] = useState<SignupPageFormData>({
-    name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -36,9 +33,6 @@ export const useSignupForm = () => {
 
   const validateForm = (): boolean => {
     const newErrors: SignupFormErrors = {};
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!validateEmail(formData.email)) {
@@ -80,13 +74,12 @@ export const useSignupForm = () => {
     setErrors({});
     try {
       const payload: SignupRequest = {
-        name: formData.name,
         email: formData.email,
         password: formData.password,
       };
       await signupUser(payload);
       // Success: Clear form and navigate to login
-      setFormData({ name: "", email: "", password: "", confirmPassword: "" }); 
+      setFormData({ email: "", password: "", confirmPassword: "" }); 
       navigate("/login");
     } catch (error: unknown) {
       if (error instanceof Error) {

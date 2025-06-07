@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useLoginForm } from "@/hooks/useLoginForm"; // Import the custom hook
-import React from "react";
 
 export default function LoginPage() {
   const {
@@ -21,11 +20,9 @@ export default function LoginPage() {
     isLoading,
     handleInputChange,
     handleSubmit,
-    // showPassword and setShowPassword are not part of useLoginForm yet, keeping them local.
+    showPassword,
+    setShowPassword,
   } = useLoginForm();
-
-  // showPassword state remains local to the component as it's purely a UI concern.
-  const [showPassword, setShowPassword] = React.useState(false);
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4 sm:p-6 md:p-8 relative overflow-hidden">

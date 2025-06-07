@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "@/services/api/authService";
 import type { LoginRequest } from "@/types/auth";
 import { validateEmail } from "@/lib/utils/validation";
+import { useAuthStore } from "@/store/authStore";
 
 // Constants - consider moving to a shared constants file if used elsewhere
 const MIN_PASSWORD_LENGTH = 8;
@@ -21,7 +22,9 @@ export const useLoginForm = () => {
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -66,7 +69,7 @@ export const useLoginForm = () => {
     try {
       const response = await loginUser(formData);
       if (response && response.token) {
-        localStorage.setItem(AUTH_TOKEN_KEY, response.token);
+        login(response.token);
       } else {
         // Optionally, handle missing token case more explicitly if needed,
         // for now, it proceeds to navigate if loginUser doesn't throw.
@@ -88,6 +91,8 @@ export const useLoginForm = () => {
     formData,
     errors,
     isLoading,
+    showPassword,
+    setShowPassword,
     handleInputChange,
     handleSubmit,
   };

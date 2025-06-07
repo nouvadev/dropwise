@@ -1,4 +1,3 @@
-import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -66,28 +65,6 @@ export default function SignupPage() {
                 {errors.general}
               </div>
             )}
-
-            {/* Name Field */}
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-xs font-sans text-foreground font-medium">
-                Your Name
-              </Label>
-              <Input
-                id="name"
-                type="text"
-                value={formData.name}
-                onChange={handleInputChange("name")}
-                placeholder="Enter your name"
-                className={cn(
-                  "font-sans bg-background/50 border-border/60 focus-visible:border-terracotta",
-                  errors.name && "border-destructive focus-visible:border-destructive"
-                )}
-                disabled={isLoading}
-              />
-              {errors.name && (
-                <p className="text-destructive text-xs font-sans">{errors.name}</p>
-              )}
-            </div>
 
             {/* Email Field */}
             <div className="space-y-2">
