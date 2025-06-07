@@ -3,9 +3,9 @@ import { useAuthStore } from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, LogOut, PlusCircle, Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DropList } from "@/components/domain/DropList";
+import { DropList } from "@/features/drops/components/DropList";
 import type { Drop } from "@/types/domain";
-import { AddDropDialog } from "@/components/domain/AddDropDialog";
+import { AddDropDialog } from "@/features/drops/components/AddDropDialog";
 import { useEffect, useState } from "react";
 import api from "@/services/api";
 
