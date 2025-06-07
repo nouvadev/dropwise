@@ -64,7 +64,7 @@ const statusColors = {
 
 export const DropCard = ({ drop, onDropUpdated, onDropDeleted }: DropCardProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const { id, topic, url, user_notes, added_date, tags } = drop;
+  const { id, topic, url, user_notes, added_date, tags, status } = drop;
   const host = new URL(url).hostname;
 
   const formatDate = (dateString: string) => {
@@ -80,28 +80,39 @@ export const DropCard = ({ drop, onDropUpdated, onDropDeleted }: DropCardProps) 
   return (
     <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
       <AlertDialog>
-        <Card className="bg-card/60 backdrop-blur-md border-border/70 shadow-sm hover:shadow-lg transition-all duration-300 w-full">
+        <Card className="bg-card/70 backdrop-blur-sm border border-border/30 shadow-md hover:border-border/60 hover:shadow-xl transition-all duration-300 w-full group">
           <CardHeader>
             <div className="flex justify-between items-start gap-4">
-              <div className="flex-1">
-                <CardTitle className="text-lg font-semibold text-foreground mb-1">
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center gap-3">
+                  <Badge 
+                    variant="secondary" 
+                    className={`capitalize text-xs font-medium px-2 py-0.5 rounded-full ${statusColors[status] || ''}`}
+                  >
+                    {status}
+                  </Badge>
+                  <a 
+                    href={url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center gap-1.5 text-muted-foreground hover:text-sky transition-colors text-sm"
+                  >
+                    <Globe className="h-3.5 w-3.5" />
+                    <span className="truncate max-w-[200px] md:max-w-xs">{host}</span>
+                  </a>
+                </div>
+                <CardTitle className="text-xl font-bold text-foreground group-hover:text-terracotta transition-colors">
                   {topic}
                 </CardTitle>
-                <CardDescription className="flex items-center gap-2 text-sky text-sm">
-                  <Globe className="h-4 w-4" />
-                  <a href={url} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                    {host}
-                  </a>
-                </CardDescription>
               </div>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                    <MoreVertical className="h-4 w-4" />
+                  <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground flex-shrink-0">
+                    <MoreVertical className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="bg-card/80 backdrop-blur-lg border-border/50">
                   <DialogTrigger asChild>
                     <DropdownMenuItem>
                       <Edit className="mr-2 h-4 w-4" />
@@ -110,7 +121,7 @@ export const DropCard = ({ drop, onDropUpdated, onDropDeleted }: DropCardProps) 
                   </DialogTrigger>
                   <DropdownMenuSeparator />
                   <AlertDialogTrigger asChild>
-                    <DropdownMenuItem className="text-destructive">
+                    <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
                       <Trash2 className="mr-2 h-4 w-4" />
                       <span>Delete</span>
                     </DropdownMenuItem>
@@ -121,27 +132,27 @@ export const DropCard = ({ drop, onDropUpdated, onDropDeleted }: DropCardProps) 
           </CardHeader>
           
           {user_notes && (
-            <CardContent>
-                <Separator className="mb-4" />
-                <div className="flex items-start gap-3">
-                    <StickyNote className="h-5 w-5 text-sunflower flex-shrink-0 mt-1" />
+            <CardContent className="pt-0">
+                <div className="border-l-2 border-sunflower/50 pl-4 mt-2">
                     <p className="text-muted-foreground text-sm italic">"{user_notes}"</p>
                 </div>
             </CardContent>
           )}
 
           <CardFooter>
-            <div className="w-full flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <div className="w-full flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm">
                 <div className="flex flex-wrap items-center gap-2">
-                    <Tag className="h-4 w-4 text-muted-foreground" />
                     {tags && tags.length > 0 ? (
                         tags.map((tag, index) => (
-                        <Badge key={`${tag}-${index}`} variant="secondary" className="font-normal">
+                        <Badge key={`${tag}-${index}`} variant="secondary">
                             {tag}
                         </Badge>
                         ))
                     ) : (
-                        <span className="text-xs text-muted-foreground">No tags</span>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Tag className="h-3.5 w-3.5" />
+                            <span>No tags</span>
+                        </div>
                     )}
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground ml-auto">
@@ -152,7 +163,7 @@ export const DropCard = ({ drop, onDropUpdated, onDropDeleted }: DropCardProps) 
           </CardFooter>
         </Card>
         
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-card/95 backdrop-blur-xl border-border/50">
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -169,7 +180,7 @@ export const DropCard = ({ drop, onDropUpdated, onDropDeleted }: DropCardProps) 
         </AlertDialogContent>
       </AlertDialog>
 
-      <DialogContent className="sm:max-w-[480px] bg-card/90 backdrop-blur-lg">
+      <DialogContent className="sm:max-w-[480px] bg-card/95 backdrop-blur-xl border-border/50">
         <DialogHeader>
           <DialogTitle className="text-2xl flex items-center gap-2">
             <Edit className="w-6 h-6 text-terracotta" />

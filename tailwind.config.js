@@ -122,6 +122,10 @@ export default {
           from: { opacity: "0", transform: "translateY(8px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        "fade-in-up": {
+          from: { opacity: "0", transform: "translateY(16px) scale(0.98)" },
+          to: { opacity: "1", transform: "translateY(0) scale(1)" },
+        },
         "soft-scale": {
           from: { transform: "scale(0.98)" },
           to: { transform: "scale(1)" },
@@ -131,6 +135,7 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "gentle-fade-in": "gentle-fade-in 0.3s ease-out",
+        "fade-in-up": "fade-in-up 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         "soft-scale": "soft-scale 0.2s ease-out",
       },
     },

@@ -27,7 +27,7 @@ export const AddDropDialog = ({ onDropAdded }: AddDropDialogProps) => {
           Add a New Drop
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[480px] bg-card/90 backdrop-blur-lg">
+      <DialogContent className="sm:max-w-[480px] bg-card/95 backdrop-blur-xl border-border/50">
         <DialogHeader>
           <DialogTitle className="text-2xl flex items-center gap-2">
              <PlusCircle className="w-6 h-6 text-terracotta" />

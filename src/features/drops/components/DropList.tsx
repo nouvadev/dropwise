@@ -26,8 +26,8 @@ export const DropList = ({ drops, onDropUpdated, onDropDeleted }: DropListProps)
       {drops.map((drop, index) => (
         <div 
             key={drop.id} 
-            className="animate-gentle-fade-in"
-            style={{ animationDelay: `${index * 100}ms` }}
+            className="animate-fade-in-up"
+            style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}
         >
             <DropCard drop={drop} onDropUpdated={onDropUpdated} onDropDeleted={onDropDeleted} />
         </div>
