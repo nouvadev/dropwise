@@ -56,7 +56,8 @@
 /* Define serif and sans-serif font families with organic characteristics */
 :root {
   --font-sans: 'Inter', 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-serif: 'Source Serif Pro', 'Literata', Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-lora: 'Lora', 'Source Serif Pro', 'Literata', Georgia, Cambria, "Times New Roman", Times, serif; /* Renamed for clarity */
+  --font-serif: var(--font-lora); /* Assign Lora to the main serif font */
 
   /* Light Mode - Mindful Meadow */
   --radius: 0.75rem; /* Increased for more organic feel */

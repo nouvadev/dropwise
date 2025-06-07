@@ -1,38 +1,48 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, LogOut, Plus, Link as LinkIcon, Edit, Trash2 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
+import { BookOpen, LogOut, PlusCircle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DropList } from "@/components/domain/DropList";
+import type { Drop } from "@/types/domain";
 
-// "read-it-later" konseptine uygun sahte veriler
-const mockDrops = [
+// Mock data reflecting the database schema
+const mockDrops: Drop[] = [
   {
-    id: "d1",
-    type: "article",
-    title: "The Psychology of Color in Marketing and Branding",
-    source: "smashingmagazine.com",
-    createdAt: "2 saat önce",
+    id: "1",
+    topic: "The Hidden Costs of Unstructured Code",
+    url: "https://example.com/articles/unstructured-code",
+    user_notes: "A must-read for the team. Highlights the importance of our new coding standards.",
+    added_date: "2 days ago",
+    status: "new",
+    tags: [{ id: 1, name: "refactoring" }, { id: 2, name: "best-practices" }],
   },
   {
-    id: "d2",
-    type: "video",
-    title: "Figma for Beginners: A Complete Tutorial",
-    source: "youtube.com",
-    createdAt: "Dün",
+    id: "2",
+    topic: "Introduction to Mindful Learning",
+    url: "https://youtube.com/watch?v=mindful",
+    user_notes: null,
+    added_date: "1 day ago",
+    status: "new",
+    tags: [{ id: 3, name: "wellness" }, { id: 4, name: "learning" }],
   },
   {
-    id: "d3",
-    type: "tweet",
-    title: "A thread on how to build a side project in public...",
-    source: "twitter.com",
-    createdAt: "3 gün önce",
+    id: "3",
+    topic: "Building Resilient Systems with Go",
+    url: "https://example-conference.com/talks/go-resilience",
+    user_notes: "Check out the section on rate limiting.",
+    added_date: "1 week ago",
+    status: "sent",
+    tags: [{ id: 5, name: "golang" }, { id: 6, name: "architecture" }],
   },
-    {
-    id: "d4",
-    type: "recipe",
-    title: "Authentic Italian Tiramisu Recipe",
-    source: "allrecipes.com",
-    createdAt: "1 hafta önce",
+  {
+    id: "4",
+    topic: "A Guide to Sustainable Productivity",
+    url: "https://some-blog.com/sustainable-productivity",
+    user_notes: "Finished this one. Great insights on avoiding burnout.",
+    added_date: "2 weeks ago",
+    status: "archived",
+    tags: [{ id: 7, name: "productivity" }],
   },
 ];
 
@@ -45,69 +55,60 @@ const HomePage = () => {
     navigate("/login");
   };
 
+  const newDrops = mockDrops.filter((drop) => drop.status === 'new');
+  const sentDrops = mockDrops.filter((drop) => drop.status === 'sent');
+  const archivedDrops = mockDrops.filter((drop) => drop.status === 'archived');
+
   return (
-    <div className="min-h-screen w-full bg-sage-DEFAULT/20 font-serif text-foreground">
-      {/* Arka plan için organik şekiller */}
+    <div className="min-h-screen w-full bg-gradient-to-br from-background via-background to-sage/30 font-serif text-foreground">
+      {/* Background shapes */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
         <div className="absolute -top-48 -left-48 w-96 h-96 bg-terracotta/10 rounded-full filter blur-3xl opacity-50 animate-gentle-fade-in"></div>
         <div className="absolute -bottom-48 -right-48 w-96 h-96 bg-sky/10 rounded-full filter blur-3xl opacity-50 animate-gentle-fade-in animation-delay-2000"></div>
       </div>
-      
+
       {/* Header */}
-      <header className="sticky top-0 z-10 flex items-center justify-between p-4 bg-background/50 backdrop-blur-lg border-b border-border/50">
+      <header className="sticky top-0 z-20 flex items-center justify-between p-4 bg-background/70 backdrop-blur-lg border-b border-border/50">
         <div className="flex items-center gap-2">
-            <BookOpen className="w-7 h-7 text-terracotta" />
-            <h1 className="text-2xl font-bold text-foreground">Dropwise</h1>
+          <BookOpen className="w-7 h-7 text-terracotta" />
+          <h1 className="text-2xl font-bold text-foreground">Dropwise</h1>
         </div>
         <Button variant="ghost" size="icon" onClick={handleLogout}>
           <LogOut className="h-5 w-5" />
-          <span className="sr-only">Çıkış Yap</span>
+          <span className="sr-only">Log Out</span>
         </Button>
       </header>
-      
-      {/* Ana İçerik */}
+
+      {/* Main Content */}
       <main className="p-4 md:p-6 lg:p-8">
         <div className="max-w-4xl mx-auto">
-          {/* Yeni Drop Ekleme */}
-          <div className="text-center mb-8 animate-gentle-fade-in">
-             <h2 className="text-3xl font-semibold mb-2">Okuma listenize ekleyin.</h2>
-             <p className="text-muted-foreground mb-4">İlginç bir makale, video veya tarif mi buldunuz? Kaydedin.</p>
-             <Button size="lg" className="bg-terracotta hover:bg-terracotta/90 text-terracotta-foreground">
-                <Plus className="mr-2 h-5 w-5" />
-                Yeni Drop Ekle
-             </Button>
+          {/* Add New Drop Section */}
+          <div className="text-center mb-10 animate-gentle-fade-in">
+            <h2 className="text-3xl font-semibold mb-2">A drop a day keeps the clutter away.</h2>
+            <p className="text-muted-foreground mb-4">Found something interesting? Add it to your collection.</p>
+            <Button size="lg" className="bg-terracotta hover:bg-terracotta/90 text-terracotta-foreground rounded-full shadow-lg hover:shadow-xl transition-shadow">
+              <PlusCircle className="mr-2 h-5 w-5" />
+              Add a New Drop
+            </Button>
           </div>
-          
-          {/* Drop Listesi */}
-          <div className="space-y-4">
-            {mockDrops.map((drop, index) => (
-              <Card 
-                key={drop.id} 
-                className="bg-card/60 backdrop-blur-md border-border/70 shadow-sm hover:shadow-lg transition-all duration-300 animate-gentle-fade-in"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <CardHeader className="flex flex-row items-start justify-between gap-4">
-                    <div className="flex-1">
-                        <CardTitle className="text-lg font-semibold text-foreground">{drop.title}</CardTitle>
-                        <CardDescription className="flex items-center gap-2 text-sky pt-1">
-                            <LinkIcon className="h-4 w-4" />
-                            {drop.source}
-                        </CardDescription>
-                    </div>
-                    <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Edit className="h-4 w-4" />
-                            <span className="sr-only">Düzenle</span>
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/80 hover:text-destructive">
-                            <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">Sil</span>
-                        </Button>
-                    </div>
-                </CardHeader>
-              </Card>
-            ))}
-          </div>
+
+          {/* Drop List with Tabs */}
+          <Tabs defaultValue="new" className="w-full animate-gentle-fade-in animation-delay-200">
+            <TabsList className="grid w-full grid-cols-3 bg-card/60 backdrop-blur-md border border-border/70 shadow-sm">
+              <TabsTrigger value="new">New ({newDrops.length})</TabsTrigger>
+              <TabsTrigger value="sent">Sent ({sentDrops.length})</TabsTrigger>
+              <TabsTrigger value="archived">Archived ({archivedDrops.length})</TabsTrigger>
+            </TabsList>
+            <TabsContent value="new" className="mt-6">
+              <DropList drops={newDrops} />
+            </TabsContent>
+            <TabsContent value="sent" className="mt-6">
+              <DropList drops={sentDrops} />
+            </TabsContent>
+            <TabsContent value="archived" className="mt-6">
+              <DropList drops={archivedDrops} />
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
     </div>

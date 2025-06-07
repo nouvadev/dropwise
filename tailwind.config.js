@@ -19,7 +19,8 @@ export default {
     extend: {
       fontFamily: {
         sans: ['var(--font-sans)', 'system-ui', '-apple-system', 'BlinkMacSystemFont', "Segoe UI", 'Roboto', "Helvetica Neue", 'Arial', "Noto Sans", 'sans-serif', "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"],
-        serif: ['var(--font-serif)', 'Georgia', 'Cambria', "Times New Roman", 'Times', 'serif'],
+        serif: ['var(--font-lora)', 'Lora', 'Georgia', 'Cambria', "Times New Roman", 'Times', 'serif'],
+        lora: ['var(--font-lora)', 'Lora', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
