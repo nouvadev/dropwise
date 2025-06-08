@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import {
+  Archive,
   Calendar,
   Edit,
   Globe,
@@ -48,6 +49,7 @@ import type { Drop } from "@/types/domain";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { EditDropForm } from "./EditDropForm";
 import { useState } from "react";
+import api from "@/services/api";
 
 interface DropCardProps {
   drop: Drop;
@@ -66,6 +68,20 @@ export const DropCard = ({ drop, onDropUpdated, onDropDeleted }: DropCardProps) 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { id, topic, url, user_notes, added_date, tags, status } = drop;
   const host = new URL(url).hostname;
+
+  const handleArchive = async () => {
+    try {
+      const payload = {
+        ...drop,
+        status: 'archived',
+      };
+      const response = await api.put(`/drops/${id}`, payload);
+      onDropUpdated(response.data);
+    } catch (error) {
+      console.error("Failed to archive drop:", error);
+      // TODO: Show a toast notification for better user experience
+    }
+  };
 
   const formatDate = (dateString: string) => {
     try {
@@ -119,6 +135,14 @@ export const DropCard = ({ drop, onDropUpdated, onDropDeleted }: DropCardProps) 
                       <span>Edit</span>
                     </DropdownMenuItem>
                   </DialogTrigger>
+                  
+                  {status !== 'archived' && (
+                    <DropdownMenuItem onClick={handleArchive}>
+                      <Archive className="mr-2 h-4 w-4" />
+                      <span>Archive</span>
+                    </DropdownMenuItem>
+                  )}
+
                   <DropdownMenuSeparator />
                   <AlertDialogTrigger asChild>
                     <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
