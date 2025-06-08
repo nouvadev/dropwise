@@ -4,13 +4,7 @@
 </p>
 
 <p align="center">
-<img src="https://img.shields.io/github/stars/your-repo/your-repo?style=social" alt="GitHub Stars">
-<img src="https://img.shields.io/github/forks/your-repo/your-repo?style=social" alt="GitHub Forks">
-<img src="https://img.shields.io/github/license/your-repo/your-repo" alt="License">
-</p>
-
-<p align="center">
-<a href="<your-live-demo-url>"><strong>➡️ View Live Demo</strong></a>
+<a href="dropwise.vercel.app"><strong>➡️ View Live Demo</strong></a>
 </p>
 
 <p align="center">
