@@ -22,7 +22,6 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -34,14 +33,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
 import {
   Archive,
   Calendar,
   Edit,
   Globe,
   MoreVertical,
-  StickyNote,
   Tag,
   Trash2,
 } from "lucide-react";
