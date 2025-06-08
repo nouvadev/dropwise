@@ -7,7 +7,7 @@ import { useAuthStore } from "@/store/authStore";
 
 // Constants - consider moving to a shared constants file if used elsewhere
 const MIN_PASSWORD_LENGTH = 8;
-const AUTH_TOKEN_KEY = "authToken";
+//const AUTH_TOKEN_KEY = "authToken";
 
 interface FormErrors {
   email?: string;
